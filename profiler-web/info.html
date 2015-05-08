@@ -1,0 +1,80 @@
+<html>
+  <head>
+	<script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+	<!--
+	Display an Google chart showing a service's memory usage.
+	-->
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+		google.load("visualization", "1", {packages:["corechart"]});
+
+		// Fetch the Heap Memory Stats JSON every 1 second, and draw to the chart
+		function fetchHeapMemStats() {
+		    $.ajax({
+				type: 'GET',
+				url: 'info',
+				dataType: 'json',
+				success: function (profilingInfo) {
+					// draw the chart
+					drawHeapChart(profilingInfo.HeapInfo);
+
+					// draw the table of extra info
+					var extraInfo = profilingInfo.ExtraServiceInfo
+					if(extraInfo != null) {
+						$('#extra_info').html('')
+						$('#extra_info').append('<table cellspacing="10" style="border:1px solid #ddd;" cellspacing="0" cellpadding="2" width="500">')
+						for (var propertyName in extraInfo) {
+							if (extraInfo.hasOwnProperty(propertyName)) {
+								$('#extra_info').append('<tr><td style="padding: 10px; width: 250px; border-left:1px solid #ddd; border-right:1px solid #ddd; border-bottom:1px solid #ddd;">' + propertyName + '</td><td style="padding: 10px; width: 250px; border-right:1px solid #ddd; border-bottom:1px solid #ddd;">' + extraInfo[propertyName] + '</td></tr>')
+							}
+						}
+						$('#extra_info').append('</table>')
+					}
+				},
+				complete: function (data) {
+					// Schedule the next poll
+					setTimeout(fetchHeapMemStats, 1000);
+				}
+		    });
+		}
+
+		// fetch the heap memory stats in 1 second
+		setTimeout(fetchHeapMemStats, 1000);
+
+	function drawHeapChart(heapData) {
+		// build the chart data
+		chartData = [];
+		var numStats = heapData.length;
+		chartData[chartData.length] = ['Time', 'Sys (MB)', 'HeapSys (MB)', 'HeapAlloc (MB)', 'HeapIdle (MB)', 'HeapReleased (MB)'];
+		for (var i = 0; i < numStats; i++) {
+			chartData[chartData.length] = [heapData[i].TimeMsAgo/1000, heapData[i].SysKb/1000.0, heapData[i].HeapSysKb/1000.0, heapData[i].HeapAllocKb/1000.0, heapData[i].HeapIdleKb/1000.0, heapData[i].HeapReleasedKb/1000.0];
+		}
+
+        var data = google.visualization.arrayToDataTable(chartData);
+
+        var options = {
+          title: 'Heap Memory Usage',
+          curveType: 'function',
+          hAxis: {title: 'seconds from now', viewWindow: {min: -60, max:0}},
+          vAxis: {title: 'Memory Usage', format: "#,###MB", viewWindow: {min: 0}}
+        };
+
+		var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
+		chart.draw(data, options);
+      }
+    </script>
+  </head>
+  <body align="center" style="font-family: Arial">
+	<div style="width=100%; text-align: right">
+		<a href="/profiler/stop">Stop Profiling</a>
+	</div>
+	<div>
+	    <div id="chart_div" style="width: 1000px; height: 600px; margin: 0 auto;"></div>
+	</div>
+
+	<div>
+		<h3 style="font-size: 15px;font-weight: bold;">Extra Service Info</h3>
+		<div id="extra_info" style="width:500px; margin: 0 auto;"></div>
+	</div>
+  </body>
+</html>
