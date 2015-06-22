@@ -16,11 +16,11 @@ To enable memory profiling, modify your main method like this:
 		"github.com/fogcreek/profiler"
 	)
 	func main() {
-		// listen on port 6060 (pick a port)
-		http.ListenAndServe(6060, nil)
-
 		// add handlers to help us track memory usage - they don't track memory until they're told to
 		profiler.AddMemoryProfilingHandlers()
+		
+		// listen on port 6060 (pick a port)
+		http.ListenAndServe(":6060", nil)
 	}
 
 
