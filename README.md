@@ -3,7 +3,7 @@ Web-Based Memory Profiler for Go Services
 
 This package helps you track your service's memory usage and report custom properties.
 
-*TODO: more info, screenshots, examples*
+![Profiler Screenshot](screenshot.png)
 
 
 Enabling Memory Profiling
@@ -18,7 +18,7 @@ To enable memory profiling, modify your main method like this:
 	func main() {
 		// add handlers to help us track memory usage - they don't track memory until they're told to
 		profiler.AddMemoryProfilingHandlers()
-		
+
 		// listen on port 6060 (pick a port)
 		http.ListenAndServe(":6060", nil)
 	}
@@ -29,11 +29,10 @@ Using Memory Profiling
 
 Enabling Memory Profiling exposes the following endpoints:
 
-- http://localhost:6060/profiler/memstats: 	Main page you should visit
-
-- http://localhost:6060/profiler/stop:			Stop recording memory statistics
-
-- http://localhost:6060/profiler/start:		Start recording memory statistics
+- http://localhost:6060/profiler/stop :    Stop recording memory statistics
+- http://localhost:6060/profiler/start :   Start recording memory statistics
+- http://localhost:6060/profiler/info.html :   Main page you should visit
+- http://localhost:6060/profiler/info :   JSON data that feeds profiler/info.html
 
 
 Working With the Template Files
