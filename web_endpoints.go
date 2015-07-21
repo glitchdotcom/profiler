@@ -95,28 +95,28 @@ func init() {
 
 // AddMemoryProfilingHandlers adds the memory profiling handlers
 func AddMemoryProfilingHandlers() {
-	http.HandleFunc("/profiler/info.html", memStatsHTMLHandler)
-	http.HandleFunc("/profiler/info", profilingInfoJSONHandler)
-	http.HandleFunc("/profiler/start", startProfilingHandler)
-	http.HandleFunc("/profiler/stop", stopProfilingHandler)
+	http.HandleFunc("/profiler/info.html", MemStatsHTMLHandler)
+	http.HandleFunc("/profiler/info", ProfilingInfoJSONHandler)
+	http.HandleFunc("/profiler/start", StartProfilingHandler)
+	http.HandleFunc("/profiler/stop", StopProfilingHandler)
 }
 
-// HTTP Handler to start memory profiling, if we're not already
-func startProfilingHandler(w http.ResponseWriter, r *http.Request) {
+// StartProfilingHandler is a HTTP Handler to start memory profiling, if we're not already
+func StartProfilingHandler(w http.ResponseWriter, r *http.Request) {
 	commandChannel <- startTracking
 	time.Sleep(500 * time.Millisecond)
 	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
 }
 
-// HTTP Handler to stop memory profiling, if we're profiling
-func stopProfilingHandler(w http.ResponseWriter, r *http.Request) {
+// StopProfilingHandler is a HTTP Handler to stop memory profiling, if we're profiling
+func StopProfilingHandler(w http.ResponseWriter, r *http.Request) {
 	commandChannel <- stopTracking
 	time.Sleep(500 * time.Millisecond)
 	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
 }
 
-// HTTP Handler to return JSON of the Heap memory statistics and any extra info the server wants to tell us about
-func profilingInfoJSONHandler(w http.ResponseWriter, r *http.Request) {
+// ProfilingInfoJSONHandler is a HTTP Handler to return JSON of the Heap memory statistics and any extra info the server wants to tell us about
+func ProfilingInfoJSONHandler(w http.ResponseWriter, r *http.Request) {
 	// struct for output
 	type outputStruct struct {
 		HeapInfo         []HeapMemStat
@@ -146,8 +146,8 @@ func profilingInfoJSONHandler(w http.ResponseWriter, r *http.Request) {
 	w.Write(js)
 }
 
-// HTTP Handler to fetch memstats.html or memstats-off.html content
-func memStatsHTMLHandler(w http.ResponseWriter, r *http.Request) {
+// MemStatsHTMLHandler is a HTTP Handler to fetch memstats.html or memstats-off.html content
+func MemStatsHTMLHandler(w http.ResponseWriter, r *http.Request) {
 	// Fetch the most recent memory statistics
 	responseChannel := make(chan []TimedMemStats)
 
