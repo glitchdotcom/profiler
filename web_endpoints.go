@@ -101,16 +101,26 @@ func AddMemoryProfilingHandlers() {
 	http.HandleFunc("/profiler/stop", StopProfilingHandler)
 }
 
+// StartProfiling is a function to start profiling automatically without web button
+func StartProfiling() {
+    commandChannel <- startTracking
+}
+
+// StopProfiling is a function to stop profiling automatically without web button
+func StopProfiling() {
+    commandChannel <- stopTracking
+}
+
 // StartProfilingHandler is a HTTP Handler to start memory profiling, if we're not already
 func StartProfilingHandler(w http.ResponseWriter, r *http.Request) {
-	commandChannel <- startTracking
+	StartProfiling()
 	time.Sleep(500 * time.Millisecond)
 	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
 }
 
 // StopProfilingHandler is a HTTP Handler to stop memory profiling, if we're profiling
 func StopProfilingHandler(w http.ResponseWriter, r *http.Request) {
-	commandChannel <- stopTracking
+	StopProfiling()
 	time.Sleep(500 * time.Millisecond)
 	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
 }
