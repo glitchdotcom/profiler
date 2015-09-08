@@ -9,7 +9,9 @@ Profiler helps you track your service's memory usage and custom key/value diagno
 Enabling Memory Profiling
 -------------------------
 
-To enable memory profiling, modify your main method like this:
+The simplest way to use the profiler is to add its endpoints to your HTTP listener. 
+See the [extra_service_info](examples/extra_service_info/) example for how to
+serve the profiler's endpoints on its own IP/port.
 
 ```go
 import (
@@ -17,18 +19,28 @@ import (
 	"github.com/wblakecaldwell/profiler"
 )
 func main() {
-	// add handlers to help us track memory usage
-	// - they don't track memory until they're told to
+	// add the profiler handler endpoints
 	profiler.AddMemoryProfilingHandlers()
 
-	// Uncomment if you want to start profiling automatically
-	// profiler.StartProfiling()
+    // add realtime extra key/value diagnostic info (optional)
+	profiler.RegisterExtraServiceInfoRetriever(extraServiceInfo)
+
+	// start the profiler on service start (optional) 
+	profiler.StartProfiling()
 
 	// listen on port 6060 (pick a port)
 	http.ListenAndServe(":6060", nil)
 }
-```
 
+// extraServiceInfo returns key/value diagnostic info
+func extraServiceInfo() map[string]interface{} {
+    extraInfo := make(map[string]interface{})
+    extraInfo["uptime"] = fetchUptime()
+	extraInfo["successful connection count"] = fetchSuccessfulConnectionCount()
+	extraInfo["failure connection count"] = fetchFailureConnectionCount()
+    return extraInfo
+}
+``` 
 
 Using Memory Profiling
 ----------------------
