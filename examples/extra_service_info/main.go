@@ -37,10 +37,7 @@ func main() {
 	// Serve your public HTTP endpoints on port 8080
 	http.HandleFunc("/", helloHandler)
 	log.Println("Starting server on :8080")
-	err := http.ListenAndServe(":8080", nil)
-	if err != nil {
-		log.Fatalf("Error starting service on :8080 - %s\n", err)
-	}
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
 
 // simple handler that just says Hello
@@ -68,10 +65,7 @@ func setupProfiler(listen string) {
 	mux.HandleFunc("/profiler/stop", profiler.StopProfilingHandler)
 	log.Printf("Starting profiler on %s\n", listen)
 	go func() {
-		err := http.ListenAndServe(listen, mux)
-		if err != nil {
-			log.Fatalf("Error starting profiler on %s - %s\n", listen, err)
-		}
+		log.Fatal(http.ListenAndServe(listen, mux))
 	}()
 }
 
