@@ -12,7 +12,7 @@
 		function fetchHeapMemStats() {
 		    $.ajax({
 				type: 'GET',
-				url: 'info',
+				url: '/debug/profiler/info',
 				dataType: 'json',
 				success: function (profilingInfo) {
 					// draw the chart

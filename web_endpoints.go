@@ -93,36 +93,28 @@ func init() {
 	}()
 }
 
-// AddMemoryProfilingHandlers adds the memory profiling handlers
-func AddMemoryProfilingHandlers() {
-	http.HandleFunc("/profiler/info.html", MemStatsHTMLHandler)
-	http.HandleFunc("/profiler/info", ProfilingInfoJSONHandler)
-	http.HandleFunc("/profiler/start", StartProfilingHandler)
-	http.HandleFunc("/profiler/stop", StopProfilingHandler)
-}
-
 // StartProfiling is a function to start profiling automatically without web button
 func StartProfiling() {
-    commandChannel <- startTracking
+	commandChannel <- startTracking
 }
 
 // StopProfiling is a function to stop profiling automatically without web button
 func StopProfiling() {
-    commandChannel <- stopTracking
+	commandChannel <- stopTracking
 }
 
 // StartProfilingHandler is a HTTP Handler to start memory profiling, if we're not already
 func StartProfilingHandler(w http.ResponseWriter, r *http.Request) {
 	StartProfiling()
 	time.Sleep(500 * time.Millisecond)
-	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/debug/profiler", http.StatusTemporaryRedirect)
 }
 
 // StopProfilingHandler is a HTTP Handler to stop memory profiling, if we're profiling
 func StopProfilingHandler(w http.ResponseWriter, r *http.Request) {
 	StopProfiling()
 	time.Sleep(500 * time.Millisecond)
-	http.Redirect(w, r, "/profiler/info.html", http.StatusTemporaryRedirect)
+	http.Redirect(w, r, "/debug/profiler", http.StatusTemporaryRedirect)
 }
 
 // ProfilingInfoJSONHandler is a HTTP Handler to return JSON of the Heap memory statistics and any extra info the server wants to tell us about
